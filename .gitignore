@@ -1,0 +1,11 @@
+.obj
+.vscode
+bin
+
+*.bmp
+*.ply
+Makefile
+cvs-open.pro.user
+.qmake.stash
+Makefile.*
+tools/generator/generator

@@ -111,10 +111,7 @@ TEST(MidmapPyramid, testTexure)
     Vector3dd a62(62.0, 0.0, 640.0);
     Vector3dd a63(72.0, 0.0, 640.0);
 
-    Vector3d32 a1(0, 0, -20);
-    Vector3d32 a2(0, 0, -20);
-    Vector3d32 a3(0, 0, -20);
-    //Vector3d32 x(a1, a2, a3);
+    // //Vector3d32 x(a1, a2, a3);
     //Vector4d32 b(0, 0, -20, 0);
 
     mesh.mulTransform(Affine3DQ::Shift(0, 0, 100));
@@ -131,22 +128,33 @@ TEST(MidmapPyramid, testTexure)
     Vector2dd b2(10.0, 0.0);
     Vector2dd b3(0.0, 10.0);
 
+    Vector3dd a1(0.0, 0.0, -20.0);
+    Vector3dd a2(0.0, 0.0, -20.0);
+    Vector3dd a3(0.0, 0.0, -20.0);
+
     // mesh.hasTexCoords = true;
     // mesh.hasNormals = true;
 
     for (int i = 0; i < 7; i++){
-        mesh.normalId[i][0] = 0;
-        mesh.normalId[i][1] = 0;
-        mesh.normalId[i][2] = 20;
+        
         renderer.textures[0] = pyramide->levels[0];
+
         mesh.texId[i][0] = 0;
         mesh.texId[i][1] = 1;
         mesh.texId[i][2] = 2;
         mesh.texId[i][3] = 0;
 
+        mesh.normalId[i][0] = 0;
+        mesh.normalId[i][1] = 1;
+        mesh.normalId[i][2] = 2;
+
         mesh.textureCoords[mesh.texId[i][0]] = b1;
         mesh.textureCoords[mesh.texId[i][1]] = b2;
         mesh.textureCoords[mesh.texId[i][2]] = b3;
+
+        mesh.normalCoords[mesh.normalId[i][0]] = a1;
+        mesh.normalCoords[mesh.normalId[i][1]] = a2;
+        mesh.normalCoords[mesh.normalId[i][2]] = a3;
     }
 
     renderer.render(&mesh, bufferpic);

@@ -4,11 +4,14 @@
 /**
  *  \file  simpleRenderer.h
  **/
+#include <vector>
 
+#include "core/utils/global.h"
 #include "core/geometry/renderer/geometryIterator.h"
 #include "core/buffers/abstractBuffer.h"
 #include "core/buffers/rgb24/abstractPainter.h"
 #include "core/geometry/mesh3DDecorated.h"
+#include "core/buffers/mipmapPyramid.h"
 
 
 namespace corecvs {
@@ -47,7 +50,24 @@ public:
 
     bool trueTexture;
     Matrix44 modelviewMatrix;
+
+// protected:    
     vector<RGB24Buffer *> textures;
+    vector<RGB24Buffer *> midmap;
+    vector<Vector3dd> facemip;
+// public:
+    // addTexture (RGB24Buffer *buffer, bool produceMidmap = false)
+    // {
+    //     textures.push_back(buffer);
+    //     if (produceMidmap)
+    //     {
+
+    //     } else {
+    //         //midmap.push_back(NULL);
+    //     }
+
+
+    // }
 
     AbstractBuffer<double> *zBuffer;
 

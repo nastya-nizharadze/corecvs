@@ -63,9 +63,10 @@ TEST(MidmapPyramid, testTexure)
 
     BufferFactory::getInstance()->saveRGB24Bitmap(&buffer, "chess.bmp");
 
-    int numLevels = 7;
+    int numLevels = 8; // ceil(логарифм по 2 из размера текстуры) + 1
     AbstractMipmapPyramid<RGB24Buffer> *pyramide = new  AbstractMipmapPyramid<RGB24Buffer>(&buffer, numLevels, 1);
 
+    BMPLoader().save("chess7.bmp", pyramide->levels[7]);
     BMPLoader().save("chess6.bmp", pyramide->levels[6]);
     BMPLoader().save("chess5.bmp", pyramide->levels[5]);
     BMPLoader().save("chess4.bmp", pyramide->levels[4]);
@@ -75,7 +76,7 @@ TEST(MidmapPyramid, testTexure)
 
     int h = 900;
     int w = 900;
-    RGB24Buffer *bufferpic = new RGB24Buffer(h, w, RGBColor::White());
+    RGB24Buffer *bufferpic = new RGB24Buffer(h, w, RGBColor::Red());
 
     ClassicRenderer renderer;
     PinholeCameraIntrinsics cam(Vector2dd(w,h), degToRad(50));
@@ -87,9 +88,9 @@ TEST(MidmapPyramid, testTexure)
     Vector3dd a02(-25.0, 0.0, -40.0);
     Vector3dd a03(-15.0, 0.0, -40.0);
 
-    Vector3dd a11(-20.0, 10.0, -20.0);
-    Vector3dd a12(-20.0, 0.0, -20.0);
-    Vector3dd a13(-10.0, 0.0, -20.0);
+    Vector3dd a11(-20.0, 10.0, -25.0);
+    Vector3dd a12(-20.0, 0.0, -25.0);
+    Vector3dd a13(-10.0, 0.0, -25.0);
 
     Vector3dd a21(-15.0, 10.0, 20.0);
     Vector3dd a22(-15.0, 0.0, 20.0);
@@ -111,33 +112,54 @@ TEST(MidmapPyramid, testTexure)
     Vector3dd a62(62.0, 0.0, 640.0);
     Vector3dd a63(72.0, 0.0, 640.0);
 
+    Vector3dd a71(110.0, 10.0, 999.0);
+    Vector3dd a72(110.0, 0.0, 999.0);
+    Vector3dd a73(120.0, 0.0, 999.0);  //спросить можно ли дальше 1000 делать, а то не получается почему - то
+
+    Vector3dd a81(170.0, 0.0, 750.0);
+    Vector3dd a82(20.0, 5.0, -25.0);
+    Vector3dd a83(20.0, -5.0, -25.0);
+
     // //Vector3d32 x(a1, a2, a3);
     //Vector4d32 b(0, 0, -20, 0);
 
     mesh.mulTransform(Affine3DQ::Shift(0, 0, 100));
-    mesh.addTriangle(a01,a02,a03);
+    mesh.addTriangle(a01,a02,a03);  //сделать покрасивше
     mesh.addTriangle(a11,a12,a13);
     mesh.addTriangle(a21,a22,a23);
     mesh.addTriangle(a31,a32,a33);
     mesh.addTriangle(a41,a42,a43);
     mesh.addTriangle(a51,a52,a53);
     mesh.addTriangle(a61,a62,a63);
+    mesh.addTriangle(a71,a72,a73);
+    mesh.addTriangle(a81,a82,a83);
     mesh.popTransform();
 
-    Vector2dd b1(0.0, 0.0);
-    Vector2dd b2(10.0, 0.0);
-    Vector2dd b3(0.0, 10.0);
+    Vector2dd b1(0.0, 1.0);
+    Vector2dd b2(0.0, 0.0);
+    Vector2dd b3(1.0, 0.0);
 
     Vector3dd a1(0.0, 0.0, -20.0);
     Vector3dd a2(0.0, 0.0, -20.0);
     Vector3dd a3(0.0, 0.0, -20.0);
 
+    Vector3dd a4(36.25, 0.0, 1.0);
+
     // mesh.hasTexCoords = true;
     // mesh.hasNormals = true;
+    renderer.textures.resize(numLevels);
+    mesh.texId.resize(9);
+    mesh.normalId.resize(9);
+    mesh.textureCoords.resize(9);
+    mesh.normalCoords.resize(9);
 
-    for (int i = 0; i < 7; i++){
+    for (int t = 0; t < numLevels; t++){
+        renderer.textures[t] = pyramide->levels[t];
+    }
+    renderer.textures[8] = pyramide->levels[0];
+
+    for (int i = 0; i < 9; i++){
         
-        renderer.textures[0] = pyramide->levels[0];
 
         mesh.texId[i][0] = 0;
         mesh.texId[i][1] = 1;
@@ -157,9 +179,16 @@ TEST(MidmapPyramid, testTexure)
         mesh.normalCoords[mesh.normalId[i][2]] = a3;
     }
 
-    renderer.render(&mesh, bufferpic);
+    mesh.normalCoords[mesh.normalId[8][0]] = a4;
+    mesh.normalCoords[mesh.normalId[8][1]] = a4;
+    mesh.normalCoords[mesh.normalId[8][2]] = a4;
 
-    BMPLoader().save("trianglesdraw1.bmp", bufferpic);
+
+    // double texId = textureId[3]; 145 строка в классик рендерере изменить в зависимости от реального размера
+    // добавить бул юзМипмаппинг
+    renderer.render(&mesh, bufferpic);  //спросить почему рендерер так странно рендерит
+
+    BMPLoader().save("trianglesdraw0.bmp", bufferpic);
 
     cout << buffer.elementBl(15.5, 15.5);
     CameraModel model;

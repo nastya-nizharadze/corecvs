@@ -325,10 +325,10 @@ void ClassicRenderer::fragmentShader(AttributedHLineSpan &span)
                             {
                                 for (int32_t j = 1; j <= midmap[texId + 1]->w; j++)
                                 {
-                                    texturemip->element(i*2-2,j*2-2) = midmap[texId]->element(i*2-2,j*2-2) / (1.0 / factor) + midmap[texId + 1]->element(i-1,j-1) / (1 / (1 - factor));
-                                    texturemip->element(i*2-2,j*2-1) = midmap[texId]->element(i*2-2,j*2-1) / (1.0 / factor) + midmap[texId + 1]->element(i-1,j-1) / (1 / (1 - factor));
-                                    texturemip->element(i*2-1,j*2-2) = midmap[texId]->element(i*2-1,j*2-2) / (1.0 / factor) + midmap[texId + 1]->element(i-1,j-1) / (1 / (1 - factor));
-                                    texturemip->element(i*2-1,j*2-1) = midmap[texId]->element(i*2-1,j*2-1) / (1.0 / factor) + midmap[texId + 1]->element(i-1,j-1) / (1 / (1 - factor));
+                                    texturemip->element(i*2-2,j*2-2) = midmap[texId]->element(i*2-2,j*2-2) * (factor) + midmap[texId + 1]->element(i-1,j-1) * (1 - factor);
+                                    texturemip->element(i*2-2,j*2-1) = midmap[texId]->element(i*2-2,j*2-1) * (factor) + midmap[texId + 1]->element(i-1,j-1) * (1 - factor);
+                                    texturemip->element(i*2-1,j*2-2) = midmap[texId]->element(i*2-1,j*2-2) * (factor) + midmap[texId + 1]->element(i-1,j-1) * (1 - factor);
+                                    texturemip->element(i*2-1,j*2-1) = midmap[texId]->element(i*2-1,j*2-1) * (factor) + midmap[texId + 1]->element(i-1,j-1) * (1 - factor);
                                 }
                             }
                             tex = tex * Vector2dd(texturemip->w, texturemip->h);

@@ -76,7 +76,7 @@ TEST(MidmapPyramid, testTexure)
     renderer.drawFaces = true;
     Mesh3DDecorated mesh;
 
-    renderer.addTexture(buffer, true);
+    renderer.addTexture(&buffer, true);
 
     Vector3dd a01(-25.0, 10.0, -40.0);
     Vector3dd a02(-25.0, 0.0, -40.0);

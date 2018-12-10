@@ -32,14 +32,16 @@ public:
     int levelNumber;
     vector<BufferType *> levels;
 
-    AbstractMipmapPyramid(BufferType *input , int _levelNumber, int check) // JUST TESTING!!!! NASTYA NIZHARADZE
+    AbstractMipmapPyramid(BufferType *input , int _levelNumber, bool check) // JUST TESTING!!!! NASTYA NIZHARADZE
     {
-        levelNumber = _levelNumber;
-        levels.resize(levelNumber);
-        levels[0] = new BufferType(input);
-        for (int i = 1; i < _levelNumber; i++)
-        {
-            levels[i] = downsample21(levels[i-1]);
+        if (check){
+            levelNumber = _levelNumber;
+            levels.resize(levelNumber);
+            levels[0] = new BufferType(input);
+            for (int i = 1; i < _levelNumber; i++)
+            {
+                levels[i] = downsample21(levels[i-1]);
+            }
         }
     }
 

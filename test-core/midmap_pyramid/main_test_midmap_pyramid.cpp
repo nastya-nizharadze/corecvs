@@ -17,6 +17,7 @@
 #include "core/buffers/mipmapPyramid.h"
 
 #include <iostream>
+#include <math.h>
 
 #include "core/fileformats/bmpLoader.h"
 #include "core/cameracalibration/cameraModel.h"
@@ -61,18 +62,9 @@ TEST(MidmapPyramid, testTexure)
     RGBColor white = RGBColor::White();
     buffer.checkerBoard(16, white);
 
+    //RGB24Buffer *buffLena = new RGB24Buffer(256,256);
+    //buffLena = BufferFactory::getInstance()->loadRGB24Bitmap("lena.bmp");
     BufferFactory::getInstance()->saveRGB24Bitmap(&buffer, "chess.bmp");
-
-    int numLevels = 8; // ceil(логарифм по 2 из размера текстуры) + 1
-    AbstractMipmapPyramid<RGB24Buffer> *pyramide = new  AbstractMipmapPyramid<RGB24Buffer>(&buffer, numLevels, 1);
-
-    BMPLoader().save("chess7.bmp", pyramide->levels[7]);
-    BMPLoader().save("chess6.bmp", pyramide->levels[6]);
-    BMPLoader().save("chess5.bmp", pyramide->levels[5]);
-    BMPLoader().save("chess4.bmp", pyramide->levels[4]);
-    BMPLoader().save("chess3.bmp", pyramide->levels[3]);
-    BMPLoader().save("chess2.bmp", pyramide->levels[2]);
-    BMPLoader().save("chess1.bmp", pyramide->levels[1]);
 
     int h = 900;
     int w = 900;
@@ -83,6 +75,8 @@ TEST(MidmapPyramid, testTexure)
     renderer.modelviewMatrix = cam.getKMatrix();
     renderer.drawFaces = true;
     Mesh3DDecorated mesh;
+
+    renderer.addTexture(buffer, true);
 
     Vector3dd a01(-25.0, 10.0, -40.0);
     Vector3dd a02(-25.0, 0.0, -40.0);
@@ -114,17 +108,14 @@ TEST(MidmapPyramid, testTexure)
 
     Vector3dd a71(110.0, 10.0, 999.0);
     Vector3dd a72(110.0, 0.0, 999.0);
-    Vector3dd a73(120.0, 0.0, 999.0);  //спросить можно ли дальше 1000 делать, а то не получается почему - то
+    Vector3dd a73(120.0, 0.0, 999.0);  
 
     Vector3dd a81(170.0, 0.0, 750.0);
     Vector3dd a82(20.0, 5.0, -25.0);
     Vector3dd a83(20.0, -5.0, -25.0);
 
-    // //Vector3d32 x(a1, a2, a3);
-    //Vector4d32 b(0, 0, -20, 0);
-
     mesh.mulTransform(Affine3DQ::Shift(0, 0, 100));
-    mesh.addTriangle(a01,a02,a03);  //сделать покрасивше
+    mesh.addTriangle(a01,a02,a03); 
     mesh.addTriangle(a11,a12,a13);
     mesh.addTriangle(a21,a22,a23);
     mesh.addTriangle(a31,a32,a33);
@@ -139,28 +130,16 @@ TEST(MidmapPyramid, testTexure)
     Vector2dd b2(0.0, 0.0);
     Vector2dd b3(1.0, 0.0);
 
-    Vector3dd a1(0.0, 0.0, -20.0);
-    Vector3dd a2(0.0, 0.0, -20.0);
-    Vector3dd a3(0.0, 0.0, -20.0);
+    Vector3dd a1(0.0, 0.0, 100.0);
+    Vector3dd a2((-31.0/6.0), 0.0, -1.0);
 
-    Vector3dd a4(36.25, 0.0, 1.0);
-
-    // mesh.hasTexCoords = true;
-    // mesh.hasNormals = true;
-    renderer.textures.resize(numLevels);
     mesh.texId.resize(9);
     mesh.normalId.resize(9);
     mesh.textureCoords.resize(9);
     mesh.normalCoords.resize(9);
 
-    for (int t = 0; t < numLevels; t++){
-        renderer.textures[t] = pyramide->levels[t];
-    }
-    renderer.textures[8] = pyramide->levels[0];
 
     for (int i = 0; i < 9; i++){
-        
-
         mesh.texId[i][0] = 0;
         mesh.texId[i][1] = 1;
         mesh.texId[i][2] = 2;
@@ -175,20 +154,18 @@ TEST(MidmapPyramid, testTexure)
         mesh.textureCoords[mesh.texId[i][2]] = b3;
 
         mesh.normalCoords[mesh.normalId[i][0]] = a1;
-        mesh.normalCoords[mesh.normalId[i][1]] = a2;
-        mesh.normalCoords[mesh.normalId[i][2]] = a3;
+        mesh.normalCoords[mesh.normalId[i][1]] = a1;
+        mesh.normalCoords[mesh.normalId[i][2]] = a1;
     }
 
-    mesh.normalCoords[mesh.normalId[8][0]] = a4;
-    mesh.normalCoords[mesh.normalId[8][1]] = a4;
-    mesh.normalCoords[mesh.normalId[8][2]] = a4;
+    mesh.normalCoords[mesh.normalId[8][0]] = a2;
+    mesh.normalCoords[mesh.normalId[8][1]] = a2;
+    mesh.normalCoords[mesh.normalId[8][2]] = a2;
 
 
-    // double texId = textureId[3]; 145 строка в классик рендерере изменить в зависимости от реального размера
-    // добавить бул юзМипмаппинг
-    renderer.render(&mesh, bufferpic);  //спросить почему рендерер так странно рендерит
+    renderer.render(&mesh, bufferpic);
 
-    BMPLoader().save("trianglesdraw0.bmp", bufferpic);
+    BMPLoader().save("trianglesdraw2.bmp", bufferpic);
 
     cout << buffer.elementBl(15.5, 15.5);
     CameraModel model;

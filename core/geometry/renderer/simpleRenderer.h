@@ -12,6 +12,9 @@
 #include "core/buffers/rgb24/abstractPainter.h"
 #include "core/geometry/mesh3DDecorated.h"
 #include "core/buffers/mipmapPyramid.h"
+#include "core/buffers/rgb24/rgb24Buffer.h"
+#include "core/geometry/renderer/attributedTriangleSpanIterator.h"
+#include "core/fileformats/bmpLoader.h"
 
 
 namespace corecvs {
@@ -47,6 +50,7 @@ public:
 
     bool drawFaces = true;
     bool drawVertexes = false;
+    bool useMipmap = false;
 
     bool trueTexture;
     Matrix44 modelviewMatrix;
@@ -54,20 +58,29 @@ public:
 // protected:    
     vector<RGB24Buffer *> textures;
     vector<RGB24Buffer *> midmap;
-    vector<Vector3dd> facemip;
 // public:
-    // addTexture (RGB24Buffer *buffer, bool produceMidmap = false)
-    // {
-    //     textures.push_back(buffer);
-    //     if (produceMidmap)
-    //     {
-
-    //     } else {
-    //         //midmap.push_back(NULL);
-    //     }
-
-
-    // }
+    void addTexture (RGB24Buffer *buffer, bool produceMidmap = false)
+    {
+        textures.push_back(buffer);
+        if (produceMidmap)
+        {
+            useMipmap = true;
+            int numLevels = trunc(log(buffer->h) / log(2)) + 1;
+            AbstractMipmapPyramid<RGB24Buffer> *pyramide = new  AbstractMipmapPyramid<RGB24Buffer>(buffer, numLevels, true);
+            for (int i = 0; i < (int)pyramide->levels.size(); i++){
+                midmap.push_back(pyramide->levels[i]);
+            }
+            BMPLoader().save("chess7.bmp", pyramide->levels[7]);
+            BMPLoader().save("chess6.bmp", pyramide->levels[6]);
+            BMPLoader().save("chess5.bmp", pyramide->levels[5]);
+            BMPLoader().save("chess4.bmp", pyramide->levels[4]);
+            BMPLoader().save("chess3.bmp", pyramide->levels[3]);
+            BMPLoader().save("chess2.bmp", pyramide->levels[2]);
+            BMPLoader().save("chess1.bmp", pyramide->levels[1]);
+        } else {
+            midmap.push_back(NULL);
+        }
+    }
 
     AbstractBuffer<double> *zBuffer;
 

@@ -280,8 +280,8 @@ public:
     {
         /*return (floor(x) >= 0) && (ceil(x) < this->w) &&
                  (floor(y) >= 0) && (ceil(y) < this->h);*/
-        return (floor(x) >= 0) && (floor(x) + 1.0 <= this->w) &&
-               (floor(y) >= 0) && (floor(y) + 1.0 <= this->h);
+        return (floor(x) >= 0) && (floor(x) + 1.0 < this->w) &&
+               (floor(y) >= 0) && (floor(y) + 1.0 < this->h);
     }
 
     /**

@@ -135,7 +135,7 @@ void ClassicRenderer::render(Mesh3DDecorated *mesh, RGB24Buffer *buffer)
     { 
         for(size_t f = 0; f < mesh->faces.size(); f++)
         {
-            printf("\n\n\n ------!! %i !!------ \n\n\n", f);
+            // printf("\n\n\n ------!! %i !!------ \n\n\n", f);
             Vector3d32 face = mesh->faces[f];
             Vector3d32 normalId = mesh->normalId[f];
             Vector4d32 textureId = mesh->texId[f];
@@ -285,12 +285,13 @@ void ClassicRenderer::fragmentShader(AttributedHLineSpan &span)
                 zBuffer->element(span.pos()) = z;
 
                 RGBColor c = color;
-
+                
+                /*
                 printf("\n||tex x %f, tex y %f ||\n",tex.x(), tex.y());
                 printf("\n|| x %f, %f ||\n",dhatt[0], dvatt[0]);
                 printf("\n|| y %f, %f ||\n",dhatt[1], dvatt[1]);
                 printf("\n|| x %f, y %f ||\n",tex.x() -lastx, tex.y() - lasty);
-
+                */
                 
                 lastx = tex.x();  // <---
                 lasty = tex.y(); // <---
@@ -301,12 +302,12 @@ void ClassicRenderer::fragmentShader(AttributedHLineSpan &span)
                     if(useMipmap){
                     
                         texId = (int)midmap.size() - 1;
-                        printf("\n|| 000 texid %i ||\n",texId);
+                        // printf("\n|| 000 texid %i ||\n",texId);
 
                         for (int i = 0; i < (int)midmap.size() - 1; i++){
                             if ((1.0 / dhatt[0]) > midmap[i+1]->h ){
                                 texId = i;
-                                printf("\n|| 111 texid %i ||\n",texId);
+                                // printf("\n|| 111 texid %i ||\n",texId);
                                 break;
                                 
                             }
@@ -314,9 +315,9 @@ void ClassicRenderer::fragmentShader(AttributedHLineSpan &span)
                         texture = midmap[texId];
                         double factor = log(abs(1.0 / dhatt[0]))/log(2);
                         factor = factor - trunc(factor);
-                        printf("\n|| factor %f ||\n",factor);
+                        // printf("\n|| factor %f ||\n",factor);
 
-                        printf("\n|| texid %i ||\n",texId);
+                        // printf("\n|| texid %i ||\n",texId);
                         RGB24Buffer *texturemip = new RGB24Buffer(midmap[texId]->w, midmap[texId]->h);
 
                         if ((texId != (int)midmap.size() - 1) && ((1 / dhatt[0]) < midmap[0]->h )){    
@@ -333,7 +334,7 @@ void ClassicRenderer::fragmentShader(AttributedHLineSpan &span)
                             }
                             tex = tex * Vector2dd(texturemip->w, texturemip->h);
                             if (texturemip->isValidCoordBl(tex)) {
-                                printf("\ncase1\n");
+                                // printf("\ncase1\n");
                                 c = texturemip->elementBl(tex);
                             } else {
                                 SYNC_PRINT(("Tex miss %lf %lf\n", tex.x(), tex.y()));
@@ -342,7 +343,7 @@ void ClassicRenderer::fragmentShader(AttributedHLineSpan &span)
                         } else {
                             tex = tex * Vector2dd(texture->w, texture->h);
                             if (texture->isValidCoordBl(tex)) {
-                                printf("\ncase2\n");
+                                // printf("\ncase2\n");
                                 c = texture->elementBl(tex);
                             } else {
                                 SYNC_PRINT(("Tex miss %lf %lf\n", tex.x(), tex.y()));
@@ -355,7 +356,7 @@ void ClassicRenderer::fragmentShader(AttributedHLineSpan &span)
 
                         tex = tex * Vector2dd(texture->w, texture->h);
                         if (texture->isValidCoordBl(tex)) {
-                            printf("\ncase3\n");
+                            // printf("\ncase3\n");
                             c = texture->elementBl(tex);
                         } else {
                             SYNC_PRINT(("Tex miss %lf %lf\n", tex.x(), tex.y()));
